@@ -1,0 +1,287 @@
+[
+  {
+    "file": ".nojekyll",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "app.css",
+    "bytes": 29981,
+    "sha256": "5f5c2139776cc3f1edf6c4762746082eefc39555259cf32064a84caa0484a168"
+  },
+  {
+    "file": "apple-touch-icon.png",
+    "bytes": 44937,
+    "sha256": "c4e7a7897356b04eacc136de4e47f156e390bbcf64c9f04311e9a48fd67860f2"
+  },
+  {
+    "file": "bearing.js",
+    "bytes": 3057,
+    "sha256": "065408b57893f4343e62e6e8f659f137820a30cd0ec40cf335d355646be9f41a"
+  },
+  {
+    "file": "cinema.css",
+    "bytes": 7010,
+    "sha256": "9ef0033d41cacabf791e979fa4c5e29f9d49c4f4cbdfd5afea0974f89df582d9"
+  },
+  {
+    "file": "cinema.js",
+    "bytes": 23569,
+    "sha256": "aecce69b6be1fbc95989ac08ad41667d3ffaea00143fc4d7b0cb4ebe2d8240c1"
+  },
+  {
+    "file": "config.js",
+    "bytes": 2595,
+    "sha256": "6cd826fde37c45bfff8dae8eed61c5b67f047d6ea08fb9f77b47066cf9f81fc4"
+  },
+  {
+    "file": "creator.css",
+    "bytes": 1741,
+    "sha256": "dfefe7dd1a4d6df8110ad90a2049ce03bc8fdfac8fda01b6a7ec795c40a68494"
+  },
+  {
+    "file": "documents.js",
+    "bytes": 55764,
+    "sha256": "5dd15b43e08fb127f6c8e5efdf09dd6577b6aaeba07794eca38240a9a028ea57"
+  },
+  {
+    "file": "engine.js",
+    "bytes": 208511,
+    "sha256": "374288c08b893494fc186197ff25c527df424148c1828763a26d56076a6c4b1f"
+  },
+  {
+    "file": "geometry.js",
+    "bytes": 13263,
+    "sha256": "0d11ca9adf55995c7ccfe6cf7b7b89a0a0116e3922133f39b61bd44089e3fbeb"
+  },
+  {
+    "file": "icon-192.png",
+    "bytes": 49447,
+    "sha256": "f8bcaf6fedd40fa3d92c53bc90321ccb7049ae9f4885e4bdb8b2e62ecaefab97"
+  },
+  {
+    "file": "icon-512.png",
+    "bytes": 332690,
+    "sha256": "444551b15b51eecd927a749f80a6a3ffda94578b7ef0d3430d2cdfea086138af"
+  },
+  {
+    "file": "index.html",
+    "bytes": 19972,
+    "sha256": "7084aab02f6750b1d20975f57468580cac8e4c2d0b9e5bf3fd7e4967fc5b43a9"
+  },
+  {
+    "file": "intelligence.js",
+    "bytes": 5033,
+    "sha256": "39c7da95af1dc7cbf59d728f53a54f168e9c537c1c7b4d340f1c0a8f0edf1f2d"
+  },
+  {
+    "file": "layers-2x.png",
+    "bytes": 1259,
+    "sha256": "066daca850d8ffbef007af00b06eac0015728dee279c51f3cb6c716df7c42edf"
+  },
+  {
+    "file": "layers.png",
+    "bytes": 696,
+    "sha256": "1dbbe9d028e292f36fcba8f8b3a28d5e8932754fc2215b9ac69e4cdecf5107c6"
+  },
+  {
+    "file": "LEAFLET-LICENSE.txt",
+    "bytes": 1395,
+    "sha256": "53e8dc25862014e4324741ca18fbe3611e11d42ef69f59f86ea8c5389647d4cb"
+  },
+  {
+    "file": "leaflet.css",
+    "bytes": 14124,
+    "sha256": "f403ec9aa987a7cb30edfbde8540930968f6d0c08a72a78c2ddb80b865dca6b0"
+  },
+  {
+    "file": "leaflet.js",
+    "bytes": 147517,
+    "sha256": "dc71f8a6880bc3ca1bd9fa8dc5f1af48c702dc510b0a78240a07c5feed7ce935"
+  },
+  {
+    "file": "manifest.webmanifest",
+    "bytes": 577,
+    "sha256": "02762b45858e414a20294fd5c99de7eb932d7ef93038bb1d75e2501c5a197343"
+  },
+  {
+    "file": "marker-icon-2x.png",
+    "bytes": 2464,
+    "sha256": "00179c4c1ee830d3a108412ae0d294f55776cfeb085c60129a39aa6fc4ae2528"
+  },
+  {
+    "file": "marker-icon.png",
+    "bytes": 1466,
+    "sha256": "574c3a5cca85f4114085b6841596d62f00d7c892c7b03f28cbfa301deb1dc437"
+  },
+  {
+    "file": "marker-shadow.png",
+    "bytes": 618,
+    "sha256": "264f5c640339f042dd729062cfc04c17f8ea0f29882b538e3848ed8f10edb4da"
+  },
+  {
+    "file": "POLYGON-CLIPPING-LICENSE.md",
+    "bytes": 1327,
+    "sha256": "864ae9e4ed75e1571a3bcf5dc9070264213445b32e7e2af5bf60eba46fb656d0"
+  },
+  {
+    "file": "polygon-clipping.js",
+    "bytes": 29053,
+    "sha256": "1bd1335a65dac024dcba9843c60160b3b53faa46967b1b3ae2a4d5ef0ff04fce"
+  },
+  {
+    "file": "project-store.js",
+    "bytes": 4342,
+    "sha256": "17d04778425fccce8c1514c65840a425f82a2bb5dcbd3ffcea6d90054f374638"
+  },
+  {
+    "file": "QR-CODE-LICENSE.txt",
+    "bytes": 210,
+    "sha256": "5a0924312cf1c8c127bea05a52a7cf8d6384784d22538134bc1812cfbe2f3f9b"
+  },
+  {
+    "file": "qrcode.js",
+    "bytes": 26841,
+    "sha256": "226c9e4d497d03d6cdb248db32bdb77df6fba1b13b9fd3718b700256dff64958"
+  },
+  {
+    "file": "sales-audio.mp3",
+    "bytes": 1969388,
+    "sha256": "327cd28b8c32350e9ed4b7e5465f7f745e2b33e07da1bc1ea858b3c9772c410d"
+  },
+  {
+    "file": "sami-mark.png",
+    "bytes": 36765,
+    "sha256": "a35b3708c9f299ed60b0ab8642c833278fd68c0f662ed74720781175d840668e"
+  },
+  {
+    "file": "sami-wordmark.png",
+    "bytes": 173537,
+    "sha256": "eb168c8e3ce6d8400163d3673e87e077e25f9fa4c16a23d820465a30546fbc6c"
+  },
+  {
+    "file": "shape-import.js",
+    "bytes": 14234,
+    "sha256": "c8a683b6e6e468d3a6f201493f40989323992970e6cd66aa21144c69ecba6829"
+  },
+  {
+    "file": "studio.js",
+    "bytes": 106740,
+    "sha256": "1e390fa544eb4c8357cc80ffabde88937c7535030705ffe126686514b0197750"
+  },
+  {
+    "file": "sw.js",
+    "bytes": 2172,
+    "sha256": "ee9fadce35b294241ce33fa3269c4c382fd2cd2ba9e92cd4664d69ae673075b2"
+  },
+  {
+    "file": "symbols.js",
+    "bytes": 6837,
+    "sha256": "3029f8509075ab4bf96ce470b3230add765615b2e7f398aaeba879893ac424e7"
+  },
+  {
+    "file": "voice-accessPoint.a2219d93d9.mp3",
+    "bytes": 27264,
+    "sha256": "a2219d93d932dbe2c65457084a70d292f62b26c03d3fa6fa3aaf3cf9d370e58f"
+  },
+  {
+    "file": "voice-added.354b45d51a.mp3",
+    "bytes": 23424,
+    "sha256": "354b45d51ab09af54d05d657a7705133d9f8aec09dc042eff8a8c1d6a2832346"
+  },
+  {
+    "file": "voice-created.ed9f35a32e.mp3",
+    "bytes": 45696,
+    "sha256": "ed9f35a32e142f7431ade94156b3ba5f38a0b525777140221b3b71ee9cf4b4cf"
+  },
+  {
+    "file": "voice-error.18fe4f4719.mp3",
+    "bytes": 51840,
+    "sha256": "18fe4f4719ec8452162e93b54058485371e758c6787b35b236113925045d44cc"
+  },
+  {
+    "file": "voice-mapView.cd29966aff.mp3",
+    "bytes": 22656,
+    "sha256": "cd29966aff2037b5517c474e6bac09b24c5581aac63790aead3492e9bd27ac4c"
+  },
+  {
+    "file": "voice-needSiteArea.d4ee52bd43.mp3",
+    "bytes": 34176,
+    "sha256": "d4ee52bd43f7893f175713ad7bdc7d37217158dabc99342ba79a9816c4bb0f0e"
+  },
+  {
+    "file": "voice-officialSource.39642fedb9.mp3",
+    "bytes": 35712,
+    "sha256": "39642fedb9f4ce63d377ffe73f7e740adb16695a8676fc41bbad765e901ec730"
+  },
+  {
+    "file": "voice-offline.356cc43761.mp3",
+    "bytes": 67200,
+    "sha256": "356cc43761c132c5a3484cfc54e37b27322a8eb95145003d0235ff208e050fcd"
+  },
+  {
+    "file": "voice-ohl.24fa98c80d.mp3",
+    "bytes": 42240,
+    "sha256": "24fa98c80d7a6ae8d289a3ee060699dedc2ac80e6a1f7ba15a76e120635ebd15"
+  },
+  {
+    "file": "voice-panelRun.4d43484e78.mp3",
+    "bytes": 23424,
+    "sha256": "4d43484e78fa7fef6749ec8478a79a56ac60e5b716b591de4582d03ae503e565"
+  },
+  {
+    "file": "voice-pdf.78038d4692.mp3",
+    "bytes": 20736,
+    "sha256": "78038d469299b338ad9ca541e7b7446643be47d4c73c0d21722ccb356ae67269"
+  },
+  {
+    "file": "voice-response.8d526f596c.mp3",
+    "bytes": 30720,
+    "sha256": "8d526f596c5f426cb3950ac1753aa0f4e9175c78cf87064875af44a5e742e5dd"
+  },
+  {
+    "file": "voice-route.fd9882ab4f.mp3",
+    "bytes": 44928,
+    "sha256": "fd9882ab4fb1faa0ed71862e8f4926bb7c4e5e4d856023851e36c4268226844c"
+  },
+  {
+    "file": "voice-saved.f1f06b2383.mp3",
+    "bytes": 21888,
+    "sha256": "f1f06b238371d7927d3afa9e5a5b5cc69e6be199d2cc2f5f12fa2ee6ab2e47df"
+  },
+  {
+    "file": "voice-services.3c3de7b3c8.mp3",
+    "bytes": 35712,
+    "sha256": "3c3de7b3c86d031ac75ef9cb70b1b4dd0b01a832433871659c032ded7d64a438"
+  },
+  {
+    "file": "voice-siteArea.2247053234.mp3",
+    "bytes": 25728,
+    "sha256": "2247053234cfc8b98fb930d4deaea902f3e435a54d993136e211e10dd2d04c44"
+  },
+  {
+    "file": "voice-undo.f603e7aa7f.mp3",
+    "bytes": 28032,
+    "sha256": "f603e7aa7f565a0d0816230be3ab8f03af1248cdee8f1d9a7e82e96cece7350f"
+  },
+  {
+    "file": "voice-updated.b3150797fb.mp3",
+    "bytes": 20736,
+    "sha256": "b3150797fb36b8af6791bb3c6c1e7ef071613a8e6f984e83b0d008ca515a7cdd"
+  },
+  {
+    "file": "voice-welcome.e1032f6327.mp3",
+    "bytes": 94464,
+    "sha256": "e1032f6327b5368078549c0e892dbb0a065d2502a5b905f7077c54d6de035e36"
+  },
+  {
+    "file": "welcome-audio.mp3",
+    "bytes": 361196,
+    "sha256": "bb2dab9825839eed7e4a2178b11b9d2f6f5da7e3c2f1c65e280af816c0dc5db9"
+  },
+  {
+    "file": "workspace.js",
+    "bytes": 69324,
+    "sha256": "1e515f99b917986a9eaf86cecdbdfaa1d2b5531b60ec0056422a487673ab1656"
+  }
+]
