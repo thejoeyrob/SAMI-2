@@ -34,25 +34,47 @@ function panels(points,o){
  if(points.length<2)throw Error('Tap at least two route points.');if(o.product==='sabre')return sabrePanels(points,o);
  const l=+o.length,w=+o.width,overlap=+o.overlap||0,lanes=+o.lanes||1,lateral=+o.lateralOverlap||0;
  if(!(l>.1&&w>.1&&overlap>=0&&overlap<l*.75&&lateral>=0&&lateral<w*.75&&lanes>=1&&lanes<=4))throw Error('Check the panel dimensions and overlaps.');
- const pr=projection(points[0]),ps=points.map(pr.xy),out=[],warnings=[],step=l-overlap,widthStep=w-lateral,cornerFamily=['lion','hybrid','tuff'].includes(o.product),runHalf=(lanes*w-(lanes-1)*lateral)/2;
+ const pr=projection(points[0]),ps=points.map(pr.xy),out=[],warnings=[],step=l-overlap,widthStep=w-lateral,cornerFamily=['lion','hybrid','tuff'].includes(o.product),runHalf=(lanes*w-(lanes-1)*lateral)/2,sharp=new Map();
  function add(x,y,ux,uy,cross=0,corner=false,junctionRow=0,cornerRule=''){const vx=-uy,vy=ux,c=[x+vx*cross,y+vy*cross],r=[[-l/2,-w/2],[l/2,-w/2],[l/2,w/2],[-l/2,w/2]].map(([a,b])=>pr.ll([c[0]+ux*a+vx*b,c[1]+uy*a+vy*b]));out.push({geometry:{type:'Polygon',coordinates:[[...r,r[0].slice()]]},corner,junctionRow,cornerRule});if(out.length>5000)throw Error('This run exceeds 5,000 panels. Use a smaller area or shorter runs.');}
- // Lay every straight section against the exact user-selected points. No corner rule is allowed to move the route geometry.
- for(let i=1;i<ps.length;i++){
-  const a=ps[i-1],b=ps[i],dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy);if(d<.01)continue;const ux=dx/d,uy=dy/d;
-  const centres=[];if(d<=l)centres.push(d/2);else{for(let x=l/2;x<=d-l/2+1e-6;x+=step)centres.push(x);if(!centres.length||d-l/2-centres.at(-1)>.35*step)centres.push(d-l/2);}
-  for(const along of centres)for(let k=0;k<lanes;k++)add(a[0]+ux*along,a[1]+uy*along,ux,uy,(k-(lanes-1)/2)*widthStep,false,0,'straight');
+ // Identify the established 5/4/3/2 sharp-corner construction first. The route points themselves are never rotated or normalised.
+ if(cornerFamily)for(let i=1;i<ps.length-1;i++){
+  const a=ps[i-1],b=ps[i],c=ps[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]);if(d1<.01||d2<.01)continue;
+  const u=[(b[0]-a[0])/d1,(b[1]-a[1])/d1],v=[(c[0]-b[0])/d2,(c[1]-b[1])/d2],dot=Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1])),angle=Math.acos(dot)/rad;
+  if(angle<59.99999||angle>120.00001)continue;
+  const side=Math.sign(u[0]*v[1]-u[1]*v[0])||1,n=[-u[1]*side,u[0]*side];
+  // Keep the established 5/4/3/2 stepped corner. The outgoing run pivots from the
+  // leading inner edge of the final two-panel row, overlaps that row, then aims at
+  // the user's actual next route point. No synthetic 90-degree correction is added.
+  const endRowCross=runHalf+3.5*widthStep,endRowSeam=[b[0]-u[0]*step+n[0]*endRowCross,b[1]-u[1]*step+n[1]*endRowCross];
+  const exitAnchor=[endRowSeam[0]-n[0]*w/2,endRowSeam[1]-n[1]*w/2];
+  const ex=[c[0]-exitAnchor[0],c[1]-exitAnchor[1]],ed=Math.hypot(ex[0],ex[1])||1,exitDir=[ex[0]/ed,ex[1]/ed],overlapDepth=Math.min(l*.36,.9);
+  const exitStart=[exitAnchor[0]+exitDir[0]*(l/2-overlapDepth),exitAnchor[1]+exitDir[1]*(l/2-overlapDepth)];
+  sharp.set(i,{u,v,side,n,angle,exitAnchor,exitDir,exitStart});
  }
- function overlapRule(b,u,v,side,rule,inside=false){const cross=(inside?-side:side)*(runHalf+w/2);for(let j=0;j<4;j++){add(b[0]-u[0]*(j+.5)*step,b[1]-u[1]*(j+.5)*step,u[0],u[1],cross,true,j+1,rule);add(b[0]+v[0]*(j+.5)*step,b[1]+v[1]*(j+.5)*step,v[0],v[1],cross,true,j+1,rule);}}
+ // Straight runs. After a 5/4/3/2 corner, the first exit panel overlaps the final two-panel row and follows the user's true exit bearing.
+ for(let i=1;i<ps.length;i++){
+  let a=ps[i-1],b=ps[i],seedExit=false;
+  const previousSharp=sharp.get(i-1);
+  if(previousSharp){a=previousSharp.exitStart;seedExit=true;}
+  let ux,uy,d;if(seedExit){ux=previousSharp.exitDir[0];uy=previousSharp.exitDir[1];d=(b[0]-a[0])*ux+(b[1]-a[1])*uy;if(d<.01)continue;}else{const dx=b[0]-a[0],dy=b[1]-a[1];d=Math.hypot(dx,dy);if(d<.01)continue;ux=dx/d;uy=dy/d;}
+  const centres=[];
+  if(seedExit){centres.push(0);for(let x=step;x<=d-l/2+1e-6;x+=step)centres.push(x);if(d-l/2-(centres.at(-1)||0)>.35*step)centres.push(Math.max(0,d-l/2));}
+  else if(d<=l)centres.push(d/2);else{for(let x=l/2;x<=d-l/2+1e-6;x+=step)centres.push(x);if(!centres.length||d-l/2-centres.at(-1)>.35*step)centres.push(d-l/2);}
+  const seen=[];for(const x of centres){if(seen.some(y=>Math.abs(y-x)<1e-5))continue;seen.push(x);for(let k=0;k<lanes;k++)add(a[0]+ux*x,a[1]+uy*x,ux,uy,(k-(lanes-1)/2)*widthStep,seedExit&&x===0,seedExit&&x===0?4:0,seedExit&&x===0?'5/4/3/2 exit overlap · chosen bearing':'straight');}
+ }
+ function overlapRule(b,u,v,side,rule){const cross=side*(runHalf+w/2);for(let j=0;j<4;j++){add(b[0]-u[0]*(j+.5)*step,b[1]-u[1]*(j+.5)*step,u[0],u[1],cross,true,j+1,rule);add(b[0]+v[0]*(j+.5)*step,b[1]+v[1]*(j+.5)*step,v[0],v[1],cross,true,j+1,rule);}}
  for(let i=1;i<ps.length-1;i++){
   const a=ps[i-1],b=ps[i],c=ps[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]);if(d1<.01||d2<.01)continue;
   const u=[(b[0]-a[0])/d1,(b[1]-a[1])/d1],v=[(c[0]-b[0])/d2,(c[1]-b[1])/d2],dot=Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1])),angle=Math.acos(dot)/rad,side=Math.sign(u[0]*v[1]-u[1]*v[0])||1;
   if(angle<=15.00001)continue;
   if(cornerFamily){
-   if(angle<=60.00001){overlapRule(b,u,v,side,'15-60 bend',false);continue;}
-   // Sharp turn: retain the clicked vertex. Build a 4/4 inside 90-degree landing, then use the normal 15–60 overlap rule for the residual angle instead of rotating or relocating the exit run.
-   overlapRule(b,u,v,side,'90 degree 4/4 inside corner',true);
-   let residual=Math.abs(angle-90);while(residual>15.00001){overlapRule(b,u,v,side,'15-60 residual bend',false);residual-=Math.min(60,residual);}
-   continue;
+   if(angle<59.99999){overlapRule(b,u,v,side,'15-60 bend');continue;}
+   if(angle<=120.00001){
+    // Established 60–120° corner: rows of 5 / 4 / 3 / 2 panels. The exit pivots from the seam between the final two panels.
+    const counts=[5,4,3,2];for(let row=0;row<counts.length;row++)for(let j=0;j<counts[row];j++)add(b[0]-u[0]*(j+.5)*step,b[1]-u[1]*(j+.5)*step,u[0],u[1],side*(runHalf+(row+.5)*widthStep),true,row+1,'5/4/3/2 corner');
+    continue;
+   }
+   warnings.push('A turn over 120° needs a separately designed junction.');continue;
   }
   warnings.push('A sharp corner needs a separately designed junction.');
  }

@@ -1,5 +1,5 @@
 {
-  "name": "SAMI · Spatial Analysis Mapping Intelligence",
+  "name": "SAMI \u00b7 Spatial Analysis Mapping Intelligence",
   "short_name": "SAMI",
   "description": "Field-first site planning, route-to-site, Trakway, services, constraints and professional drawing output.",
   "id": "./",
@@ -9,10 +9,24 @@
   "background_color": "#090b0d",
   "theme_color": "#090b0d",
   "icons": [
-    {"src":"icon-192.png","sizes":"192x192","type":"image/png"},
-    {"src":"icon-512.png","sizes":"512x512","type":"image/png"}
+    {
+      "src": "sami-app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "sami-app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ],
   "shortcuts": [
-    {"name":"Open SAMI","short_name":"Open","url":"./"}
+    {
+      "name": "Open SAMI",
+      "short_name": "Open",
+      "url": "./"
+    }
   ]
 }
