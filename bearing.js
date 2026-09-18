@@ -1,10 +1,11 @@
 /* View bearing rotates display only. All project and export geometry stays geographic. */
 window.SAMIBearing=function(map,viewport,onChange){
 'use strict';
-const el=map.getContainer();let bearing=0,size=0,dragStart=null,gesture=null;
+const el=map.getContainer();let bearing=0,size=0,dragStart=null,gesture=null,resizeRaf=0,lastView='';
 const rotate=(p,a)=>{a*=Math.PI/180;return L.point(p.x*Math.cos(a)-p.y*Math.sin(a),p.x*Math.sin(a)+p.y*Math.cos(a))};
 const view=()=>viewport.getBoundingClientRect();
-function resize(){const c=map.getCenter(),z=map.getZoom(),r=view();size=Math.ceil(Math.hypot(r.width,r.height))+4;el.style.width=size+'px';el.style.height=size+'px';el.style.left=(r.width-size)/2+'px';el.style.top=(r.height-size)/2+'px';el.style.transformOrigin='50% 50%';map.invalidateSize({pan:false});map.setView(c,z,{animate:false});apply();}
+function resize(){const c=map.getCenter(),z=map.getZoom(),r=view(),key=Math.round(r.width)+'x'+Math.round(r.height);if(key===lastView&&size){apply();return}lastView=key;size=Math.ceil(Math.hypot(r.width,r.height))+4;el.style.width=size+'px';el.style.height=size+'px';el.style.left=(r.width-size)/2+'px';el.style.top=(r.height-size)/2+'px';el.style.transformOrigin='50% 50%';map.invalidateSize({pan:false});map.setView(c,z,{animate:false});apply();}
+function scheduleResize(){cancelAnimationFrame(resizeRaf);resizeRaf=requestAnimationFrame(resize)}
 function apply(){el.style.transform='rotate('+bearing+'deg)';el.style.setProperty('--counter-bearing',-bearing+'deg');}
 function set(value,save=true){bearing=((Number(value)||0)%360+360)%360;if(Math.abs(bearing-360)<.01)bearing=0;apply();if(save)onChange?.(bearing);map.fire('bearingchange',{bearing});}
 function fromScreen(x,y){const r=view(),q=rotate(L.point(x-r.left-r.width/2,y-r.top-r.height/2),-bearing);return q.add([size/2,size/2]);}
@@ -19,6 +20,6 @@ viewport.addEventListener('touchstart',e=>{if(e.touches.length===2&&!window.SAMI
 viewport.addEventListener('touchmove',e=>{if(gesture&&e.touches.length===2){set(gesture.bearing+angle(e.touches)-gesture.angle,false);e.preventDefault();}},{passive:false});
 viewport.addEventListener('touchend',e=>{if(gesture&&e.touches.length<2){gesture=null;onChange?.(bearing);}},{passive:true});
 viewport.addEventListener('touchcancel',()=>{gesture=null;onChange?.(bearing);},{passive:true});
-const observer=new ResizeObserver(()=>resize());observer.observe(viewport);resize();
+const observer=new ResizeObserver(scheduleResize);observer.observe(viewport);resize();
 return{set,get:()=>bearing,resize,fromScreen,toScreen,visibleCorners:()=>{const r=view();return[[r.left,r.top],[r.right,r.top],[r.right,r.bottom],[r.left,r.bottom]].map(([x,y])=>map.containerPointToLatLng(fromScreen(x,y)))} };
 };

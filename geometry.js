@@ -1,4 +1,4 @@
-(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./polygon-clipping.1bd1335a65.js'):root.polygonClipping);if(typeof module==='object'&&module.exports)module.exports=api;else root.SamiGeometry=api;})(typeof window!=='undefined'?window:this,function(pc){
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./polygon-clipping.js'):root.polygonClipping);if(typeof module==='object'&&module.exports)module.exports=api;else root.SamiGeometry=api;})(typeof window!=='undefined'?window:this,function(pc){
 'use strict';
 const R=6371008.8,rad=Math.PI/180,copy=o=>JSON.parse(JSON.stringify(o));
 function validCoord(p){return Array.isArray(p)&&p.length>=2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=180&&Math.abs(p[1])<=85;}
@@ -35,14 +35,15 @@ function panels(points,o){
  const l=+o.length,w=+o.width,overlap=+o.overlap||0,lanes=+o.lanes||1,lateral=+o.lateralOverlap||0;
  if(!(l>.1&&w>.1&&overlap>=0&&overlap<l*.75&&lateral>=0&&lateral<w*.75&&lanes>=1&&lanes<=4))throw Error('Check the panel dimensions and overlaps.');
  const pr=projection(points[0]),ps=points.map(pr.xy),out=[],warnings=[],sharp=new Map(),starts=new Map();const step=l-overlap,widthStep=w-lateral;
- if(o.product==='lion')for(let i=1;i<ps.length-1;i++){
+ const cornerFamily=['lion','hybrid','tuff'].includes(o.product);
+ if(cornerFamily)for(let i=1;i<ps.length-1;i++){
   const a=starts.get(i-1)||ps[i-1],b=ps[i],c=ps[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]);if(d1<.01||d2<.01)continue;
   const u=[(b[0]-a[0])/d1,(b[1]-a[1])/d1],v=[(c[0]-b[0])/d2,(c[1]-b[1])/d2],angle=Math.acos(Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1])))/rad;
   if(angle<=60.00001)continue;const side=Math.sign(u[0]*v[1]-u[1]*v[0])||1,n=[-u[1]*side,u[0]*side],half=(lanes*w-(lanes-1)*lateral)/2,tail=Math.max(2,Math.ceil((half*2+.1)/l));
   const landing=[b[0]-u[0]*tail*step/2+n[0]*(half+4*widthStep-.2),b[1]-u[1]*tail*step/2+n[1]*(half+4*widthStep-.2)];
   starts.set(i,landing);const delta=[landing[0]+n[0]*d2-c[0],landing[1]+n[1]*d2-c[1]];
   for(let j=i+1;j<ps.length;j++)ps[j]=[ps[j][0]+delta[0],ps[j][1]+delta[1]];
-  sharp.set(i,{u,side,half,tail});warnings.push('Lion sharp bend normalized to 90° with a '+[tail+3,tail+2,tail+1,tail].join(' / ')+' full-panel landing.');
+  sharp.set(i,{u,side,half,tail});warnings.push(((o.product||'Trakway').replace(/^./,x=>x.toUpperCase()))+' sharp bend normalized to 90° with a '+[tail+3,tail+2,tail+1,tail].join(' / ')+' full-panel landing.');
  }
  function add(x,y,ux,uy,cross=0,corner=false,junctionRow=0){const vx=-uy,vy=ux;const c=[x+vx*cross,y+vy*cross];const r=[[-l/2,-w/2],[l/2,-w/2],[l/2,w/2],[-l/2,w/2]].map(([a,b])=>pr.ll([c[0]+ux*a+vx*b,c[1]+uy*a+vy*b]));out.push({geometry:{type:'Polygon',coordinates:[[...r,r[0].slice()]]},corner,junctionRow});if(out.length>5000)throw Error('This run exceeds 5,000 panels. Use a smaller area or shorter runs.');}
  for(let i=1;i<ps.length;i++){
@@ -61,7 +62,7 @@ function panels(points,o){
    const side=Math.sign(u[0]*v[1]-u[1]*v[0])||1;
    for(let j=0;j<4;j++){add(b[0]-u[0]*(j+.5)*step,b[1]-u[1]*(j+.5)*step,u[0],u[1],side*(lanes*widthStep/2+w/2),true);add(b[0]+v[0]*(j+.5)*step,b[1]+v[1]*(j+.5)*step,v[0],v[1],side*(lanes*widthStep/2+w/2),true);}
   }
-  if(angle>60)warnings.push('A sharp corner needs a separately designed junction.');
+  if(angle>60&&!cornerFamily)warnings.push('A sharp corner needs a separately designed junction.');
   if(o.product==='sabre'&&angle>.2)warnings.push('Sabre-X bends need joint-position / lateral-stagger verification.');
  }
  return{panels:out,warnings:[...new Set(warnings)],distance:length(points)};
