@@ -105,3 +105,102 @@ html[data-theme="arctic"]{--bg:#0b1014;--panel:#11181d;--surface:#1a242b;--surfa
 @media(max-width:700px){.header-map-pane{right:6px;top:calc(100% + 4px);max-width:calc(100vw - 12px);justify-content:flex-end}.header-map-pane>#areaChip{max-width:150px}.header-map-pane .map-controls button,.header-map-pane .canvas-toolbar>button,.header-map-pane .history-controls button{width:33px!important;min-width:33px!important;height:33px!important;min-height:33px!important}.header-map-pane .base-switch{right:0}.header-tools-toggle{width:35px!important;min-width:35px!important;height:35px!important}}
 /* v2.2 removes the redundant legacy button rail; all functions live in the contextual sidebar/header pane. */
 #toolRail{display:none!important}
+
+/* ================================================================
+   SAMI 2.4 — refinement pass
+   Additive polish layer: motion, depth, readability, finishing detail.
+   Nothing here changes layout structure or JS-bound class contracts.
+   ================================================================ */
+:root{--ease:cubic-bezier(.2,.8,.2,1);--ease-out:cubic-bezier(.16,1,.3,1);--shadow-sm:0 2px 10px #0004;--shadow-md:0 10px 30px #0006;--shadow-lg:0 24px 64px #0008;}
+
+/* Motion: consistent, slightly springy easing instead of linear defaults */
+button,input,select,textarea{transition:background .16s var(--ease),border-color .16s var(--ease),transform .12s var(--ease),box-shadow .16s var(--ease),color .16s var(--ease)}
+button:active{transform:translateY(1px) scale(.99)}
+.project-card,.asset-tile,.appearance-choice,.asset-row{transition:background .16s var(--ease),border-color .16s var(--ease),transform .18s var(--ease),box-shadow .2s var(--ease)}
+
+/* Buttons: subtle lift on hover instead of a flat colour swap, plus a soft glow on primary CTAs */
+button:not(:disabled):hover{transform:translateY(-1px)}
+button:not(:disabled):active{transform:translateY(0)}
+button.primary:not(:disabled),.primary:not(:disabled),.accent-btn:not(:disabled){box-shadow:0 1px 0 #ffffff2e inset,0 6px 18px -6px color-mix(in srgb,var(--accent) 65%,transparent)}
+button.primary:not(:disabled):hover,.accent-btn:not(:disabled):hover{box-shadow:0 1px 0 #ffffff3a inset,0 10px 26px -6px color-mix(in srgb,var(--accent) 75%,transparent)}
+.wide-btn.primary,#startFindBtn{letter-spacing:.01em}
+
+/* Focus: a visible ring that reads clearly on every theme, without the harsh default outline alone */
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 22%,transparent)}
+
+/* Cards: real elevation on hover instead of just a border colour change */
+.project-card{box-shadow:var(--shadow-sm)}
+.project-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--accent2)}
+.asset-tile:hover{transform:translateY(-1px)}
+.appearance-choice:hover{border-color:var(--line2)}
+
+/* Readability: the smallest labels in the UI were sitting below a comfortable reading size */
+.stage-intro small,.tag,.eyebrow{font-size:9.5px}
+.asset-tile small,.vehicle-grid small{font-size:8px}
+.check-item.info,.service-guidance,.inline-note,.draw-setup p{font-size:9.5px;line-height:1.65}
+.modebar{font-size:inherit}
+@media(max-width:600px){.modebar .mode-tabs button{font-size:10.5px}}
+
+/* Scrollbars: a quieter, on-brand scrollbar instead of the platform default, where supported */
+.drawer-content,.sami-messages,.modal-body,.project-dashboard,#inspectorTabs,.global-menu{scrollbar-color:var(--line2) transparent}
+.drawer-content::-webkit-scrollbar,.sami-messages::-webkit-scrollbar,.modal-body::-webkit-scrollbar,.project-dashboard::-webkit-scrollbar,.global-menu::-webkit-scrollbar{width:8px;height:8px}
+.drawer-content::-webkit-scrollbar-thumb,.sami-messages::-webkit-scrollbar-thumb,.modal-body::-webkit-scrollbar-thumb,.project-dashboard::-webkit-scrollbar-thumb,.global-menu::-webkit-scrollbar-thumb{background:var(--line2);border-radius:99px}
+.drawer-content::-webkit-scrollbar-thumb:hover,.sami-messages::-webkit-scrollbar-thumb:hover,.modal-body::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+.drawer-content::-webkit-scrollbar-track,.sami-messages::-webkit-scrollbar-track,.modal-body::-webkit-scrollbar-track{background:transparent}
+
+/* Toast: a real entrance instead of an instant snap-in, and a touch more presence */
+#toast{border:1px solid #ffffff26;box-shadow:var(--shadow-lg);font-weight:550;animation:sami-toast-in .3s var(--ease-out)}
+@keyframes sami-toast-in{from{opacity:0;transform:translate(-50%,10px) scale(.97)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+
+/* Modal: fade + scale entrance on the dialog itself, sharper overlay separation */
+.modal{background:#020407c4}
+.modal:not(.hidden) .modal-card{animation:sami-modal-in .22s var(--ease-out)}
+@keyframes sami-modal-in{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-card{box-shadow:var(--shadow-lg)}
+
+/* Global menu: same treatment as the modal so every overlay feels part of one system */
+.global-menu{animation:sami-menu-in .16s var(--ease-out)}
+@keyframes sami-menu-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Drawer: a gentle slide when its content is replaced, so switching tools doesn't feel like a jump-cut */
+.drawer-content{animation:sami-fade-in .18s var(--ease-out)}
+@keyframes sami-fade-in{from{opacity:0}to{opacity:1}}
+
+/* Project dashboard: a bit more atmosphere behind the hero, and cards that feel touchable */
+.project-dashboard{background:var(--bg) radial-gradient(ellipse 60% 50% at 82% -4%,color-mix(in srgb,var(--accent) 16%,transparent),transparent 60%),radial-gradient(ellipse 40% 35% at 6% 100%,color-mix(in srgb,var(--accent2) 8%,transparent),transparent 65%)}
+.dashboard-intro h1{background:linear-gradient(180deg,var(--ink),color-mix(in srgb,var(--ink) 78%,var(--accent)));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.project-miniature{position:relative;overflow:hidden}
+.project-card:hover .project-miniature{background:color-mix(in srgb,var(--surface) 80%,var(--accent) 4%)}
+
+/* Selection & draw status bars: slightly stronger presence so they read as active UI, not a stray tooltip */
+.selection-bar,.draw-status{backdrop-filter:blur(14px);box-shadow:var(--shadow-md)}
+.draw-status strong{color:var(--ink)}
+
+/* Ask SAMI bar: make the send button read as the primary action it is */
+.send-btn{background:var(--accent);color:#071d13;box-shadow:0 6px 16px -6px color-mix(in srgb,var(--accent) 65%,transparent)}
+.send-btn:hover{background:#8fe2b3}
+
+/* Install gate: a touch more polish on first impression */
+.install-gate-card button{box-shadow:0 8px 22px -6px color-mix(in srgb,var(--accent) 55%,transparent)}
+
+/* Compact section disclosure: animate the chevron instead of an instant rotate */
+.compact-section summary:after{transition:transform .18s var(--ease)}
+
+/* Reduced motion: keep everything, just skip the added movement */
+@media(prefers-reduced-motion:reduce){#toast,.modal:not(.hidden) .modal-card,.global-menu,.drawer-content{animation:none!important}button:not(:disabled):hover,.project-card:hover,.asset-tile:hover{transform:none!important}}
+
+
+/* SAMI BETA v1 — Site Delivery Operating System layer */
+:root{--beta-green:#73efbd;--beta-cyan:#69bde7;--beta-amber:#efc875;--beta-danger:#ef8f84;--beta-surface:color-mix(in srgb,var(--panel) 88%,#10201a);--beta-hairline:color-mix(in srgb,var(--line) 78%,var(--accent));}
+.beta-pill{display:inline-flex;align-items:center;height:23px;padding:0 9px;border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);border-radius:999px;font-size:8px;letter-spacing:.12em;color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.intelligence-dashboard{padding-top:calc(20px + env(safe-area-inset-top));background:var(--bg) radial-gradient(ellipse 52% 42% at 82% -8%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 65%),linear-gradient(180deg,color-mix(in srgb,var(--bg) 92%,#111b18),var(--bg));}
+.intel-header>div{display:flex;align-items:center;gap:12px}.intel-header img{width:102px!important}.intel-header button{color:var(--ink);border:1px solid var(--line)!important;padding:9px 13px!important;border-radius:8px!important;background:var(--panel)!important}
+.intel-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,390px);gap:24px;align-items:end;padding:7vh 0 28px;border-bottom:1px solid var(--line)}.intel-hero small,.intel-command small,.intel-card small,.intel-modules small,.recent-heading small{font-size:8px;letter-spacing:.15em;color:var(--muted)}.intel-hero h1{margin:8px 0 4px;font-size:clamp(32px,5vw,62px);font-weight:450;letter-spacing:-.055em;line-height:.98}.intel-hero p{margin:0;color:var(--muted);font-size:12px}.intel-next{padding:18px;border:1px solid var(--beta-hairline);border-radius:14px;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 8%,var(--panel)),var(--panel));box-shadow:0 18px 50px #0002}.intel-next strong{display:block;margin:8px 0 14px;font-size:18px;line-height:1.25;font-weight:520}.intel-next button{width:100%}
+.intel-command{display:grid;grid-template-columns:1fr 1fr 1.35fr auto;gap:1px;margin:18px 0;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}.intel-command>div,.intel-command>button{min-height:94px;padding:16px;background:var(--panel);border:0;border-radius:0;text-align:left}.intel-command strong{display:block;margin:7px 0 4px;font-size:13px;font-weight:560}.intel-command span{font-size:9px;color:var(--muted)}.intel-command>button{display:flex;align-items:flex-end;justify-content:flex-start;min-width:180px;color:var(--accent);font-weight:600;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 11%,var(--panel)),var(--panel))}
+.intel-grid{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:10px}.intel-card{min-height:170px;padding:16px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:13px;background:linear-gradient(160deg,var(--beta-surface),var(--panel));box-shadow:0 10px 30px #00000012}.intel-card strong{margin:14px 0 5px;font-size:clamp(17px,2vw,26px);font-weight:500;letter-spacing:-.035em}.intel-card p{margin:0 0 12px;min-height:36px;color:var(--muted);font-size:9px;line-height:1.45}.intel-card button{margin-top:auto;align-self:flex-start;min-height:28px;padding:0 10px;font-size:9px;background:transparent;border-color:var(--line)}
+.intel-modules{display:grid;grid-template-columns:1.4fr 1fr;gap:28px;margin:28px 0;padding:24px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 5%,var(--panel)),var(--panel))}.intel-modules h2{margin:7px 0;font-size:23px;font-weight:480}.intel-modules p{max-width:750px;color:var(--muted);font-size:10px;line-height:1.65}.module-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:center}.recent-heading{margin-top:34px}.recent-heading>div h2{margin:6px 0 0}.project-dashboard footer{padding-bottom:18px}
+.ohl-support.mapped-reference{border-color:#b95b9e;background:color-mix(in srgb,#7a2f68 28%,var(--panel));box-shadow:0 0 0 3px #9d4a8619,0 4px 14px #0004}.ohl-support .terminal-mark{font-size:18px;color:#d486bd}.ohl-label{font-weight:600}
+.sami-panel-head strong{letter-spacing:-.015em}.sami-panel-head small{color:var(--muted)}
+@media(max-width:1180px){.intel-grid{grid-template-columns:repeat(3,minmax(170px,1fr))}.intel-command{grid-template-columns:1fr 1fr}.intel-command>button{min-width:0}.intel-hero{grid-template-columns:1fr .72fr}}
+@media(max-width:760px){.intel-hero{grid-template-columns:1fr;padding-top:34px}.intel-grid{grid-template-columns:1fr 1fr}.intel-command{grid-template-columns:1fr}.intel-command>div,.intel-command>button{min-height:76px}.intel-modules{grid-template-columns:1fr}.module-actions{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.intel-grid{grid-template-columns:1fr}.module-actions{grid-template-columns:1fr}.intel-hero h1{font-size:38px}}

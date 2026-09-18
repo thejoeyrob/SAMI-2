@@ -1,7 +1,7 @@
 {
-  "name": "SAMI \u00b7 Spatial Analysis Mapping Intelligence",
+  "name": "SAMI BETA \u00b7 Site Delivery Operating System",
   "short_name": "SAMI",
-  "description": "Field-first site planning, route-to-site, Trakway, services, constraints and professional drawing output.",
+  "description": "Project intelligence, site delivery planning, route-to-site, Trakway, constraints and the SAMI Digital Site Engineer.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
