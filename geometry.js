@@ -34,36 +34,27 @@ function panels(points,o){
  if(points.length<2)throw Error('Tap at least two route points.');if(o.product==='sabre')return sabrePanels(points,o);
  const l=+o.length,w=+o.width,overlap=+o.overlap||0,lanes=+o.lanes||1,lateral=+o.lateralOverlap||0;
  if(!(l>.1&&w>.1&&overlap>=0&&overlap<l*.75&&lateral>=0&&lateral<w*.75&&lanes>=1&&lanes<=4))throw Error('Check the panel dimensions and overlaps.');
- const pr=projection(points[0]),ps=points.map(pr.xy),out=[],warnings=[],sharp=new Map(),starts=new Map();const step=l-overlap,widthStep=w-lateral;
- const cornerFamily=['lion','hybrid','tuff'].includes(o.product);
- if(cornerFamily)for(let i=1;i<ps.length-1;i++){
-  const a=starts.get(i-1)||ps[i-1],b=ps[i],c=ps[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]);if(d1<.01||d2<.01)continue;
-  const u=[(b[0]-a[0])/d1,(b[1]-a[1])/d1],v=[(c[0]-b[0])/d2,(c[1]-b[1])/d2],angle=Math.acos(Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1])))/rad;
-  if(angle<=60.00001)continue;const side=Math.sign(u[0]*v[1]-u[1]*v[0])||1,n=[-u[1]*side,u[0]*side],half=(lanes*w-(lanes-1)*lateral)/2,tail=Math.max(2,Math.ceil((half*2+.1)/l));
-  const landing=[b[0]-u[0]*tail*step/2+n[0]*(half+4*widthStep-.2),b[1]-u[1]*tail*step/2+n[1]*(half+4*widthStep-.2)];
-  starts.set(i,landing);const delta=[landing[0]+n[0]*d2-c[0],landing[1]+n[1]*d2-c[1]];
-  for(let j=i+1;j<ps.length;j++)ps[j]=[ps[j][0]+delta[0],ps[j][1]+delta[1]];
-  sharp.set(i,{u,side,half,tail});warnings.push(((o.product||'Trakway').replace(/^./,x=>x.toUpperCase()))+' sharp bend normalized to 90° with a '+[tail+3,tail+2,tail+1,tail].join(' / ')+' full-panel landing.');
- }
- function add(x,y,ux,uy,cross=0,corner=false,junctionRow=0){const vx=-uy,vy=ux;const c=[x+vx*cross,y+vy*cross];const r=[[-l/2,-w/2],[l/2,-w/2],[l/2,w/2],[-l/2,w/2]].map(([a,b])=>pr.ll([c[0]+ux*a+vx*b,c[1]+uy*a+vy*b]));out.push({geometry:{type:'Polygon',coordinates:[[...r,r[0].slice()]]},corner,junctionRow});if(out.length>5000)throw Error('This run exceeds 5,000 panels. Use a smaller area or shorter runs.');}
+ const pr=projection(points[0]),ps=points.map(pr.xy),out=[],warnings=[],step=l-overlap,widthStep=w-lateral,cornerFamily=['lion','hybrid','tuff'].includes(o.product),runHalf=(lanes*w-(lanes-1)*lateral)/2;
+ function add(x,y,ux,uy,cross=0,corner=false,junctionRow=0,cornerRule=''){const vx=-uy,vy=ux,c=[x+vx*cross,y+vy*cross],r=[[-l/2,-w/2],[l/2,-w/2],[l/2,w/2],[-l/2,w/2]].map(([a,b])=>pr.ll([c[0]+ux*a+vx*b,c[1]+uy*a+vy*b]));out.push({geometry:{type:'Polygon',coordinates:[[...r,r[0].slice()]]},corner,junctionRow,cornerRule});if(out.length>5000)throw Error('This run exceeds 5,000 panels. Use a smaller area or shorter runs.');}
+ // Lay every straight section against the exact user-selected points. No corner rule is allowed to move the route geometry.
  for(let i=1;i<ps.length;i++){
-  const a=starts.get(i-1)||ps[i-1],b=ps[i],dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy);if(d<.01)continue;const ux=dx/d,uy=dy/d;
-  const start=i===1||starts.has(i-1)?l/2:0,end=i===ps.length-1||sharp.has(i)?Math.max(start,d-l/2):d;
-  const n=Math.max(1,Math.ceil((end-start)/step)+1);
-  for(let j=0;j<n;j++){const along=sharp.has(i)?d-l/2-(n-1-j)*step:start+j*step;for(let k=0;k<lanes;k++)add(a[0]+ux*along,a[1]+uy*along,ux,uy,(k-(lanes-1)/2)*widthStep);}
-  if(i<ps.length-1&&!sharp.has(i)&&Math.abs(start+(n-1)*step-d)>.01)for(let k=0;k<lanes;k++)add(b[0],b[1],ux,uy,(k-(lanes-1)/2)*widthStep,true);
+  const a=ps[i-1],b=ps[i],dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy);if(d<.01)continue;const ux=dx/d,uy=dy/d;
+  const centres=[];if(d<=l)centres.push(d/2);else{for(let x=l/2;x<=d-l/2+1e-6;x+=step)centres.push(x);if(!centres.length||d-l/2-centres.at(-1)>.35*step)centres.push(d-l/2);}
+  for(const along of centres)for(let k=0;k<lanes;k++)add(a[0]+ux*along,a[1]+uy*along,ux,uy,(k-(lanes-1)/2)*widthStep,false,0,'straight');
  }
- for(const [i,junction]of sharp){const b=ps[i],{u,side,half,tail}=junction;for(let row=0;row<4;row++)for(let j=0;j<tail+3-row;j++)add(b[0]-u[0]*(j+.5)*step,b[1]-u[1]*(j+.5)*step,u[0],u[1],side*(half+(row+.5)*widthStep),true,row+1);}
+ function overlapRule(b,u,v,side,rule,inside=false){const cross=(inside?-side:side)*(runHalf+w/2);for(let j=0;j<4;j++){add(b[0]-u[0]*(j+.5)*step,b[1]-u[1]*(j+.5)*step,u[0],u[1],cross,true,j+1,rule);add(b[0]+v[0]*(j+.5)*step,b[1]+v[1]*(j+.5)*step,v[0],v[1],cross,true,j+1,rule);}}
  for(let i=1;i<ps.length-1;i++){
-  if(sharp.has(i))continue;
-  const a=starts.get(i-1)||ps[i-1],b=ps[i],c=ps[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]);if(d1<.01||d2<.01)continue;
-  const u=[(b[0]-a[0])/d1,(b[1]-a[1])/d1],v=[(c[0]-b[0])/d2,(c[1]-b[1])/d2];const angle=Math.acos(Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1])))/rad;
-  if(angle>15&&angle<=60.00001&&o.product!=='sabre'){
-   const side=Math.sign(u[0]*v[1]-u[1]*v[0])||1;
-   for(let j=0;j<4;j++){add(b[0]-u[0]*(j+.5)*step,b[1]-u[1]*(j+.5)*step,u[0],u[1],side*(lanes*widthStep/2+w/2),true);add(b[0]+v[0]*(j+.5)*step,b[1]+v[1]*(j+.5)*step,v[0],v[1],side*(lanes*widthStep/2+w/2),true);}
+  const a=ps[i-1],b=ps[i],c=ps[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]);if(d1<.01||d2<.01)continue;
+  const u=[(b[0]-a[0])/d1,(b[1]-a[1])/d1],v=[(c[0]-b[0])/d2,(c[1]-b[1])/d2],dot=Math.max(-1,Math.min(1,u[0]*v[0]+u[1]*v[1])),angle=Math.acos(dot)/rad,side=Math.sign(u[0]*v[1]-u[1]*v[0])||1;
+  if(angle<=15.00001)continue;
+  if(cornerFamily){
+   if(angle<=60.00001){overlapRule(b,u,v,side,'15-60 bend',false);continue;}
+   // Sharp turn: retain the clicked vertex. Build a 4/4 inside 90-degree landing, then use the normal 15–60 overlap rule for the residual angle instead of rotating or relocating the exit run.
+   overlapRule(b,u,v,side,'90 degree 4/4 inside corner',true);
+   let residual=Math.abs(angle-90);while(residual>15.00001){overlapRule(b,u,v,side,'15-60 residual bend',false);residual-=Math.min(60,residual);}
+   continue;
   }
-  if(angle>60&&!cornerFamily)warnings.push('A sharp corner needs a separately designed junction.');
-  if(o.product==='sabre'&&angle>.2)warnings.push('Sabre-X bends need joint-position / lateral-stagger verification.');
+  warnings.push('A sharp corner needs a separately designed junction.');
  }
  return{panels:out,warnings:[...new Set(warnings)],distance:length(points)};
 }
